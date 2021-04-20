@@ -10,9 +10,9 @@ describe('Employee', () => {
       try {
         const fakeDB = new MongoMemoryServer();
     
-        const uri = await fakeDB.getConnectionString();
+        const uri = await fakeDB.getUri();
     
-        mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+        await mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true });
     
       } catch(err) {
         console.log(err);
@@ -22,7 +22,7 @@ describe('Employee', () => {
 
     describe('Reading data', () => {
 
-        beforeEach(async () => {
+        before(async () => {
             const empOne = new Employee({ firstName: 'One', lastName: 'One', department: '606f55b17240f3408acc2567' });
             await empOne.save();
         
@@ -41,7 +41,7 @@ describe('Employee', () => {
             expect(employee.firstName).to.be.equal('One');
         });
     
-        afterEach(async () => {
+        after(async () => {
           await Employee.deleteMany();
         });
     
@@ -78,11 +78,11 @@ describe('Employee', () => {
         });
       
         it('should properly update one document with "save" method', async () => {
-          const employee = await Employee.findOne({ firstName: 'One' });
+          const employee = await Employee.findOne({ firstName: 'One', lastName: 'One', department: '606f55b17240f3408acc2567' });
           employee.firstName = 'Oneone';
           await employee.save();
     
-          const updatedEmployee = await Employee.findOne({ firstName: 'Oneone' });
+          const updatedEmployee = await Employee.findOne({ firstName: 'Oneone', lastName: 'One', department: '606f55b17240f3408acc2567' });
           expect(updatedEmployee).to.not.be.null;
         });
       
@@ -93,7 +93,7 @@ describe('Employee', () => {
           expect(employees[1].firstName).to.be.equal('Updated!');
         });
 
-            afterEach(async () => {
+        afterEach(async () => {
               await Employee.deleteMany();
             });
           
@@ -101,7 +101,7 @@ describe('Employee', () => {
 
      describe('Removing data', () => {
 
-        beforeEach(async () => {
+      beforeEach(async () => {
             const empOne = new Employee({ firstName: 'One', lastName: 'One', department: '606f55b17240f3408acc2567' });
             await empOne.save();
         
